@@ -8,7 +8,7 @@ Rake::TestTask.new(:test) do |t|
   t.test_files = FileList["test/**/*_test.rb"]
 end
 
-Rake::ExtensionTask.new "my_malloc" do |ext|
+Rake::ExtensionTask.new "fast_winnower" do |ext|
   ext.lib_dir = "lib/fast_winnower"
 end
 

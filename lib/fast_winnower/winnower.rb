@@ -1,6 +1,6 @@
 module FastWinnower
   class Winnower
-    def self.from_string(string, tokenizer: FastWinnower::Tokenizers::Ascii, **options)
+    def self.from_string(string, tokenizer: FastWinnower::Tokenizers::Default, **options)
       new(tokenizer.call(string), **options)
     end
 

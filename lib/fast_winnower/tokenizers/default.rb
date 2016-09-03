@@ -1,6 +1,6 @@
 module FastWinnower
   module Tokenizers
-    module Ascii
+    class Default
       def self.call(value)
         value
           .chars
