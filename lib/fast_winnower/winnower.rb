@@ -1,7 +1,10 @@
 module FastWinnower
   class Winnower
-    def self.from_string(string, tokenizer: FastWinnower::Tokenizers::Default, **options)
-      new(tokenizer.call(string), **options)
+    def self.from_string(string, preprocessor: FastWinnower::Preprocessors::Plain.new, **options)
+      new(
+        preprocessor.call(string),
+        **options,
+      )
     end
 
     def initialize(tokens, window_size: 4, kgram_size: 3, hasher: FastWinnower::Hashers::SHA1)
@@ -30,14 +33,14 @@ module FastWinnower
     def build_windows(fingerprints)
       each_kgram(fingerprints, @window_size)
         .map do |kgram|
-          kgram.min { |a, b| a[1] <=> b[1] }
+          kgram.max { |a, b| a[0] <=> b[0] }
         end
     end
 
     def fingerprint(kgram)
-      indexes, tokens = kgram.transpose
+      tokens, indexes = kgram.transpose
       fingerprint = @hasher.call(tokens.join)
-      [indexes[0], fingerprint]
+      [fingerprint, indexes[0]]
     end
 
     def each_kgram(enumerable, n)

@@ -8,10 +8,9 @@ module FastWinnower
   # match is usually lost at the beginning and the end of the match.
   Similarity = Struct.new(:range_a, :range_b)
 
-  class SimilarityBuilder
-    def initialize(windows_a, windows_b)
-      @windows_a = windows_a
-      @windows_b = windows_b
+  class Visualizer
+    def initialize(match)
+      @match = match
     end
 
     def call

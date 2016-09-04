@@ -34,3 +34,8 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/fast_winnower.
 
+## References
+
+[A New Suffix Tree Similarity Measure for Document
+Clustering](http://www2007.org/papers/paper091.pdf)
+[Winnowing: Local Algorithms for Document Fingerprinting](http://igm.univ-mlv.fr/~mac/ENS/DOC/sigmod03-1.pdf)
