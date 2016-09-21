@@ -1,8 +1,7 @@
 # FastWinnower
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/fast_winnower`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Native implementation of the [Winnowing](http://igm.univ-mlv.fr/~mac/ENS/DOC/sigmod03-1.pdf) algorithm for local
+document fingerprinting. This gem also provides a naive implementation in ruby to compare performances.
 
 ## Installation
 
@@ -22,7 +21,34 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+This gem can be used to compare similarity between 2 documents. This differ from a simple `diff` by providing
+relationships between similar parts between 2 corpuses. Let's take the following 2 sentences:
+
+
+```rb
+# tokens = FastWinnower.tokenize("Hello my name is Maxime", "Hello, my name is henry")
+# similarities = FastWinnower.compare(tokens)
+```
+
+A classic example would be to remove parts from a set of boilerplate documents. To do so, inhierithing from the base
+class `Pair` would do the trick.
+
+```rb
+class PairWithoutBoilerplate < Pair
+  def initialize(a, b, boilerplate)
+    super(a, b)
+    @boilerplate = boilerplate
+  end
+
+  def intersecting_fingerprints
+    super - boilerplate.fingerprints
+  end
+
+  def all_fingerprints
+    super - boilerplate.fingerprints
+  end
+end
+```
 
 ## Development
 
@@ -32,10 +58,10 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/fast_winnower.
+Bug reports and pull requests are welcome on GitHub at https://github.com/maximebedard/fast_winnower.
 
 ## References
 
-[A New Suffix Tree Similarity Measure for Document
-Clustering](http://www2007.org/papers/paper091.pdf)
-[Winnowing: Local Algorithms for Document Fingerprinting](http://igm.univ-mlv.fr/~mac/ENS/DOC/sigmod03-1.pdf)
+- [A New Suffix Tree Similarity Measure for Document Clustering](http://www2007.org/papers/paper091.pdf)
+- [Winnowing: Local Algorithms for Document Fingerprinting](http://igm.univ-mlv.fr/~mac/ENS/DOC/sigmod03-1.pdf)
+- [Jaccard coefficient](http://matpalm.com/resemblance/jaccard_coeff/)

@@ -6,21 +6,26 @@ module FastWinnower
   # consisting of a followed by b. While this merging of matches
   # is easy to implement, k-grams are naturally coarse and some of the
   # match is usually lost at the beginning and the end of the match.
-  Similarity = Struct.new(:range_a, :range_b)
-
-  class Visualizer
-    def initialize(match)
-      @match = match
+  class SimilarityAllocator
+    def self.allocate(pair)
+      new(pair).allocate
     end
 
-    def call
-      all_similarities = []
-      @windows_a.each_with_index do |window_a, i|
-        similarities = similarities_for(window_a, i)
+    protected
 
-        all_similarities += similarities
-      end
-      all_similarities
+    def allocate
+      windows_a
+        .each_with_index
+        .inject([]) do |memo, window_a, i|
+          similarities = similarities_for(window_a, i)
+          memo + similarities
+        end
+    end
+
+    def initialize(match)
+      @windows_a = match.windows_a
+      @windows_b = match.windows_b
+      @matching_fingerprints = match.matching_fingerprints
     end
 
     private
@@ -28,8 +33,8 @@ module FastWinnower
     def build_similarity(i, j)
       length = measure_length(i, j)
 
-      index_a = @windows_a[i][0]
-      index_b = @windows_b[j][0]
+      index_a = windows_a[i][0]
+      index_b = windows_b[j][0]
 
       Similarity.new(
         index_a..index_a + length,
@@ -38,7 +43,7 @@ module FastWinnower
     end
 
     def similarities_for(window_a, i)
-      @windows_b
+      windows_b
         .each_with_index
         .select { |window_b, _| window_a[1] == window_b[1] }
         .map { |_, j| build_similarity(i, j) }
@@ -51,10 +56,10 @@ module FastWinnower
     end
 
     def consecutive?(offset_a, offset_b)
-      return false if offset_a >= @windows_a.size
-      return false if offset_b >= @windows_b.size
+      return false if offset_a >= windows_a.size
+      return false if offset_b >= windows_b.size
 
-      @windows_a[offset_a][1] == @windows_b[offset_b][1]
+      windows_a[offset_a][1] == windows_b[offset_b][1]
     end
   end
 end

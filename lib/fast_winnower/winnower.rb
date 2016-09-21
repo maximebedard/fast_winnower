@@ -1,13 +1,6 @@
 module FastWinnower
   class Winnower
-    def self.from_string(string, preprocessor: FastWinnower::Preprocessors::Plain.new, **options)
-      new(
-        preprocessor.call(string),
-        **options,
-      )
-    end
-
-    def initialize(tokens, window_size: 4, kgram_size: 3, hasher: FastWinnower::Hashers::SHA1)
+    def initialize(tokens, window_size: 4, kgram_size: 3, hasher: FastWinnower::Hashers::MostSignificantSHA1)
       @tokens = Array(tokens)
       @window_size = window_size
       @kgram_size = kgram_size
