@@ -1,4 +1,3 @@
-require "fast_winnower/comparator"
 require "fast_winnower/similarity_allocator"
 
 module FastWinnower

@@ -1,5 +1,5 @@
 module FastWinnower
-  class MiddlewareChain
+  class TransformationChain
     include Enumerable
 
     attr_reader :entries
@@ -21,14 +21,11 @@ module FastWinnower
       chain = retreive.dup
 
       traverse_chain = lambda do
-        result =
-          if chain.empty?
-            yield
-          else
-            chain.shift.call(*args, &traverse_chain)
-          end
-
-        block.call(&block)
+        if chain.empty?
+          yield
+        else
+          chain.shift.call(*args, &traverse_chain)
+        end
       end.call
     end
 

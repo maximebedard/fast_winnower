@@ -2,11 +2,11 @@ module FastWinnower
   module Preprocessors
     class Source
       def self.supported_extensions
-        []
+        [".rb"]
       end
 
-      def call(_content)
-        raise NotImplementedError
+      def call(content)
+        content.downcase
       end
     end
   end

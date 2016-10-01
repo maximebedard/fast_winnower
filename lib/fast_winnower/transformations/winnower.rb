@@ -1,7 +1,7 @@
 require "fast_winnower/hashers/most_significant_sha1"
 
 module FastWinnower
-  module Middlewares
+  module Transformations
     class Winnower
       def initialize(window_size: 4, kgram_size: 3, hasher: FastWinnower::Hashers::MostSignificantSHA1)
         @window_size = window_size

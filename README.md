@@ -21,6 +21,8 @@ Or install it yourself as:
 
 ## Usage
 
+### Preprocessing
+
 This gem can be used to compare similarity between 2 documents. This differ from a simple `diff` by providing
 relationships between similar parts between 2 corpuses. To analyze both corpuses, the process is divided into 2
 distinct operations: preprocessing, comparaison. This can allow the implementer to create an indexing strategy to
@@ -44,10 +46,24 @@ class PrependSomething
   end
 end
 
-FastWinnower.middleware do |m|
+FastWinnower.transformation_chain do |m|
   m.add_at 0, PrependSomething
 end
 ```
+
+It's also possible to hijack the result of the current transformation to display it to the user. A good example for this
+would be to display a text-only version of a PDF file. To do so, the `preprocess` method yields the `input` hash of each
+transformations.
+
+```rb
+FastWinnower.preprocess("/usr/tmp/1990-12-19.pdf") do |result|
+  next unless result[:class] == Transformation::Preprocessor
+
+  puts result[:data]
+end
+```
+
+### Comparaison
 
 When comparing 2 documents, it is also a common practice to ignore specific information that can be shared across
 many documents. A very common example would be to strip boilterplate information or license from the similarity
@@ -76,6 +92,9 @@ result = FastWinnower.compare(a, b, comparator)
 ```
 
 ## Benchmarks
+
+Right now it's not very fast considering it's all written in pure ruby as a proof of concept. Further versions will
+include a c implementation in an attempt to provide a faster implementation. Stay tuned.
 
 ## Development
 

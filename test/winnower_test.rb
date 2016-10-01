@@ -1,5 +1,5 @@
 require "test_helper"
-require "fast_winnower/middlewares/winnower"
+require "fast_winnower/transformations/winnower"
 
 module WinnowerTests
   def test_call_with_tokens
@@ -36,7 +36,7 @@ class WinnowerTest < Minitest::Test
   include WinnowerTests
 
   def setup
-    @strategy = ::FastWinnower::Middlewares::Winnower.new
+    @strategy = ::FastWinnower::Transformations::Winnower.new
   end
 end
 

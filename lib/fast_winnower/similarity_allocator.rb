@@ -28,7 +28,7 @@ module FastWinnower
       @comparaison_result = comparaison_result
     end
 
-    def_delegator(
+    def_delegators(
       :@comparaison_result,
       :fingerprints_compared,
       :fingerprints_reference,

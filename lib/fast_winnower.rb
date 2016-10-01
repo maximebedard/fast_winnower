@@ -1,22 +1,22 @@
 require "set"
 require "digest"
 require "fast_winnower/version"
-require "fast_winnower/middleware"
+require "fast_winnower/transformation_chain"
 require "fast_winnower/comparaison_result"
 
 module FastWinnower
   extend self
 
-  def middleware
-    @middleware ||= default_middlewares
-    yield @middleware if block_given?
-    @middleware
+  def transformation_chain
+    @transformation ||= default_transformations
+    yield @transformation if block_given?
+    @transformation
   end
 
-  def preprocess(input, *args, &block)
-    input = normalize_input_hash(input, *args)
+  def preprocess(input, &block)
+    input = normalize_input_hash(input)
 
-    middleware.invoke(input, &block)
+    transformation.invoke(input, &block)
   end
 
   def compare(*args)
@@ -39,25 +39,18 @@ module FastWinnower
     ret
   end
 
-  def default_middlewares
-    require "fast_winnower/middlewares/preprocessor"
-    require "fast_winnower/middlewares/tokenizer"
-    require "fast_winnower/middlewares/winnower"
+  def default_transformations
+    require "fast_winnower/transformations/preprocessor"
+    require "fast_winnower/transformations/tokenizer"
+    require "fast_winnower/transformations/winnower"
 
-    MiddlewareChain.new do |m|
-      m.add(Middlewares::Preprocessor, preprocessors: default_preprocessors)
-      m.add(Middlewares::Tokenizer)
-      m.add(Middlewares::Winnower)
+    TransformationChain.new do |m|
+      m.add(Transformations::Preprocessor, preprocessors: default_preprocessors)
+      m.add(Transformations::Tokenizer)
+      m.add(Transformations::Winnower)
     end
   end
 
   def default_preprocessors
-    require "fast_winnower/preprocessors/plain"
-    require "fast_winnower/preprocessors/source"
-
-    [
-      Preprocessors::Plain.new,
-      Preprocessors::Source.new,
-    ]
   end
 end
