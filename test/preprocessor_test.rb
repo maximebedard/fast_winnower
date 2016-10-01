@@ -31,6 +31,12 @@ class PreprocessorTest < MiniTest::Test
     end
   end
 
+  def test_detect_by_nil_mode_raises
+    assert_raises(FastWinnower::Transformations::Preprocessor::ModeNotSupportedError) do
+      @preprocessor.call {}
+    end
+  end
+
   def test_detect_by_extension_with_unsupported_extension_raises
     file = Tempfile.new(["test", ".yolo"])
 

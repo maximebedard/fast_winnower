@@ -8,9 +8,9 @@ module FastWinnower
   extend self
 
   def transformation_chain
-    @transformation ||= default_transformations
-    yield @transformation if block_given?
-    @transformation
+    @transformation_chain ||= default_transformation_chain
+    yield @transformation_chain if block_given?
+    @transformation_chain
   end
 
   def preprocess(input, &block)
@@ -39,18 +39,15 @@ module FastWinnower
     ret
   end
 
-  def default_transformations
+  def default_transformation_chain
     require "fast_winnower/transformations/preprocessor"
     require "fast_winnower/transformations/tokenizer"
     require "fast_winnower/transformations/winnower"
 
     TransformationChain.new do |m|
-      m.add(Transformations::Preprocessor, preprocessors: default_preprocessors)
+      m.add(Transformations::Preprocessor)
       m.add(Transformations::Tokenizer)
       m.add(Transformations::Winnower)
     end
-  end
-
-  def default_preprocessors
   end
 end
