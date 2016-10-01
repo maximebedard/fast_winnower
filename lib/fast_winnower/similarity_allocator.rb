@@ -7,8 +7,10 @@ module FastWinnower
   # is easy to implement, k-grams are naturally coarse and some of the
   # match is usually lost at the beginning and the end of the match.
   class SimilarityAllocator
-    def self.allocate(pair)
-      new(pair).allocate
+    extend Forwardable
+
+    def self.allocate(comparaison_result)
+      new(comparaison_result).allocate
     end
 
     protected
@@ -22,11 +24,16 @@ module FastWinnower
         end
     end
 
-    def initialize(match)
-      @windows_a = match.windows_a
-      @windows_b = match.windows_b
-      @matching_fingerprints = match.matching_fingerprints
+    def initialize(comparaison_result)
+      @comparaison_result = comparaison_result
     end
+
+    def_delegator(
+      :@comparaison_result,
+      :fingerprints_compared,
+      :fingerprints_reference,
+      :intersecting_fingerprints
+    )
 
     private
 

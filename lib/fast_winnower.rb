@@ -1,53 +1,63 @@
 require "set"
 require "digest"
 require "fast_winnower/version"
-require "fast_winnower/hashers/most_significant_sha1"
-require "fast_winnower/preprocessors/plain"
-require "fast_winnower/preprocessors/source"
-require "fast_winnower/winnower"
-require "fast_winnower/match"
-require "fast_winnower/similarity_allocator"
+require "fast_winnower/middleware"
+require "fast_winnower/comparaison_result"
 
 module FastWinnower
-  module Preprocessors
-    extend self
+  extend self
 
+  def middleware
+    @middleware ||= default_middlewares
+    yield @middleware if block_given?
+    @middleware
   end
 
-  def tokenize(*tokenizables, preprocessors: true)
+  def preprocess(input, *args, &block)
+    input = normalize_input_hash(input, *args)
 
+    middleware.invoke(input, &block)
   end
 
-  def compare(*comparables, pair_klass: Pair)
-    comparables
-      .each_slice(2)
-      .select { |args| args.size == 2 }
-      .map { |args| pair_klass.new(*args) }
+  def compare(*args)
+    ComparaisonResult.new(*args)
   end
 
   private
 
-  def normalize_preprocessors(preprocessors)
-    preprocessors = Array(preprocessors)
-    preprocessors = preprocessors.size < 2 ? preprocessors * 2 : preprocessors.take(2)
-    preprocessors
+  def normalize_input_hash(input, **opts)
+    ret = opts.dup
+    ret[:data] = input
+    ret[:detection_mode] = :none
+
+    if File.file?(input)
+      ret[:data] = input.read
+      ret[:path] = input.path
+      ret[:detection_mode] ||= :extension
+    end
+
+    ret
   end
 
-  class TokenizedResult
-    def initialize(content, preprocessor, **options)
-      @content = File.file?(content) ? File.read(content) : content
-      @preprocessor = preprocessor
-      @winnower = options.fetch(:winnower, Winnower)
-      @options = options
-    end
+  def default_middlewares
+    require "fast_winnower/middlewares/preprocessor"
+    require "fast_winnower/middlewares/tokenizer"
+    require "fast_winnower/middlewares/winnower"
 
-    attr_reader :content
-
-    def windows
-      @windows ||= @winnower.new(tokens, @options)
+    MiddlewareChain.new do |m|
+      m.add(Middlewares::Preprocessor, preprocessors: default_preprocessors)
+      m.add(Middlewares::Tokenizer)
+      m.add(Middlewares::Winnower)
     end
+  end
 
-    def tokens
-    end
+  def default_preprocessors
+    require "fast_winnower/preprocessors/plain"
+    require "fast_winnower/preprocessors/source"
+
+    [
+      Preprocessors::Plain.new,
+      Preprocessors::Source.new,
+    ]
   end
 end

@@ -6,11 +6,7 @@ module FastWinnower
       end
 
       def call(content)
-        content
-          .downcase
-          .chars
-          .each_with_index
-          .select { |c, _| c =~ /\w/ }
+        content.downcase
       end
     end
   end

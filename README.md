@@ -22,33 +22,60 @@ Or install it yourself as:
 ## Usage
 
 This gem can be used to compare similarity between 2 documents. This differ from a simple `diff` by providing
-relationships between similar parts between 2 corpuses. Let's take the following 2 sentences:
-
+relationships between similar parts between 2 corpuses. To analyze both corpuses, the process is divided into 2
+distinct operations: preprocessing, comparaison. This can allow the implementer to create an indexing strategy to
+compare against multiple document at the same time.
 
 ```rb
-# tokens = FastWinnower.tokenize("Hello my name is Maxime", "Hello, my name is henry")
-# similarities = FastWinnower.compare(tokens)
+blob_a = FastWinnower.preprocess("Hello my name is Maxime")
+blob_b = FastWinnower.preprocess("Hello my name is Henry!")
+
+result = FastWinnower.compare(blob_a, blob_b)
 ```
 
-A classic example would be to remove parts from a set of boilerplate documents. To do so, inhierithing from the base
-class `Pair` would do the trick.
+Preprocessing is done via a transformation chain that applies transformation to the data provided. A new transformation
+can be added in the chain as such:
 
 ```rb
-class PairWithoutBoilerplate < Pair
-  def initialize(a, b, boilerplate)
-    super(a, b)
-    @boilerplate = boilerplate
-  end
-
-  def intersecting_fingerprints
-    super - boilerplate.fingerprints
-  end
-
-  def all_fingerprints
-    super - boilerplate.fingerprints
+class PrependSomething
+  def call(input)
+    input[:data] = "something #{input[:data]}"
+    yield(input)
   end
 end
+
+FastWinnower.middleware do |m|
+  m.add_at 0, PrependSomething
+end
 ```
+
+When comparing 2 documents, it is also a common practice to ignore specific information that can be shared across
+many documents. A very common example would be to strip boilterplate information or license from the similarity
+analysis. To do so, a custom comparator can be used to define which fingerprints are going to be used during the
+comparaison process.
+
+```rb
+class BoilerplateComparator
+  def initialize(boilerplate_windows)
+    @b_indexes, @b_fingerprints = boilerplate_windows.transpose
+  end
+
+  def intersect(a, b)
+    (a & b) - @b_fingerprints
+  end
+
+  def all
+    (a | b) - @b_fingerprints
+  end
+end
+
+blob_boilerplate = FastWinnower.preprocess("Awesome stuff™")
+comparator = BoilerplateComparator.new(blob_boilerplate)
+
+result = FastWinnower.compare(a, b, comparator)
+```
+
+## Benchmarks
 
 ## Development
 
