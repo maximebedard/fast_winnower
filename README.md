@@ -57,12 +57,39 @@ transformations.
 
 ```rb
 FastWinnower.preprocess("/usr/tmp/1990-12-19.pdf") do |result|
-  next unless result[:class] == Transformation::Preprocessor
+  next unless result[:class] == Transformations::Preprocessor
 
   puts result[:data]
 end
 ```
 
+Registering a custom preprocessor is also pretty easy.
+
+```rb
+class MyPreprocessor
+  def call(input)
+    input[:data] = "yolo"
+    yield(input)
+  end
+end
+
+FastWinnower::Transformations::Preprocessor.preprocessors << MyPreprocessor
+```
+
+Or via DSL? (because why not)
+
+```rb
+class MyNewPreprocessorTransformation < FastWinnower::Transformations::Preprocessor
+  preprocessors do |list|
+    list << Preprocessor1
+    list << Preprocessor2
+  end
+
+  # other stuff
+end
+
+FastWinnower.transformation_chain.swap Transformations::Preprocessor, MyNewPreprocessorTransformation
+```
 ### Comparaison
 
 When comparing 2 documents, it is also a common practice to ignore specific information that can be shared across
