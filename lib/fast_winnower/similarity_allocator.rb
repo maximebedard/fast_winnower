@@ -32,7 +32,7 @@ module FastWinnower
       :@comparaison_result,
       :fingerprints_compared,
       :fingerprints_reference,
-      :intersecting_fingerprints
+      :intersecting_fingerprints,
     )
 
     private

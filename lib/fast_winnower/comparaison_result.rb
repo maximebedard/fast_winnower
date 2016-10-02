@@ -17,8 +17,8 @@ module FastWinnower
       @windows_compared = windows_compared
       @comparator = comparator
 
-      @fingerprints_reference, @indexes_reference  = windows_reference.transpose
-      @fingerprints_compared, @indexes_compared  = windows_compared.transpose
+      @fingerprints_reference, @indexes_reference = windows_reference.transpose
+      @fingerprints_compared, @indexes_compared = windows_compared.transpose
 
       @fingerprints_reference ||= []
       @fingerprints_compared ||= []
@@ -41,7 +41,7 @@ module FastWinnower
     end
 
     def similarity_coefficient
-      return 1 if all_fingerprints.size == 0
+      return 1 if all_fingerprints.size.zero?
 
       intersecting_fingerprints.size.to_f / all_fingerprints.size
     end

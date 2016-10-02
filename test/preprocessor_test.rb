@@ -41,7 +41,7 @@ class PreprocessorTest < MiniTest::Test
     file = Tempfile.new(["test", ".yolo"])
 
     assert_raises(FastWinnower::Transformations::Preprocessor::PreprocessorNotFoundError) do
-      @preprocessor.call(detection_mode: :extension, data: "", path: file.path )
+      @preprocessor.call(detection_mode: :extension, data: "", path: file.path)
     end
   end
 

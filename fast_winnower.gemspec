@@ -1,5 +1,5 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "fast_winnower/version"
 
@@ -9,11 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Maxime Bedard"]
   spec.email         = ["maxime.bedard@shopify.com"]
 
-  spec.summary       = %q{Native implementation of the Winnowing algorithm}
-  spec.description   = %q{
-    Native implementation of the winnowing algorithm. Includes a similarity allocator
-    to allow visualization of the similarities.
-  }
+  spec.summary       = "Native implementation of the Winnowing algorithm"
+  spec.description   = "Native implementation of the Winnowing algorithm"
   spec.homepage      = ""
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
@@ -35,5 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
   spec.add_development_dependency "rake-compiler", "~> 1.0"
+  spec.add_development_dependency "rubocop"
   spec.add_development_dependency "pry-byebug"
 end
